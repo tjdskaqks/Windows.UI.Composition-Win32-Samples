@@ -1,13 +1,8 @@
-﻿//using InteropCompositor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using InteropCompositor;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Composition;
 
-namespace Composition.WindowsRuntimeHelpers_NETStd
+namespace Composition.WindowsRuntimeHelpers_NET6
 {
     public static class CompositionHelper
     {
@@ -30,13 +25,20 @@ namespace Composition.WindowsRuntimeHelpers_NETStd
         [ComVisible(true)]
         interface ICompositorDesktopInterop
         {
-            Windows.UI.Composition.Desktop.DesktopWindowTarget CreateDesktopWindowTarget(IntPtr hwnd, bool isTopmost);
+            //Windows.UI.Composition.Desktop.DesktopWindowTarget CreateDesktopWindowTarget(IntPtr hwnd, bool isTopmost);
+            void CreateDesktopWindowTarget(IntPtr hwndTarget, bool isTopmost, out IDesktopWindowTarget test);
         }
+
 
         public static CompositionTarget CreateDesktopWindowTarget(this Compositor compositor, IntPtr hwnd, bool isTopmost)
         {
-            var desktopInterop = (ICompositorDesktopInterop)(object)compositor;
-            return desktopInterop.CreateDesktopWindowTarget(hwnd, isTopmost);
+            //var desktopInterop = (ICompositorDesktopInterop)(object)compositor;
+            //return desktopInterop.CreateDesktopWindowTarget(hwnd, isTopmost);
+
+            ICompositorDesktopInterop interop = compositor.TryAs<ICompositorDesktopInterop>();
+            interop.CreateDesktopWindowTarget(hwnd, isTopmost, out var target);
+            ICompositionTarget compositionTarget = (ICompositionTarget)target;
+            return (CompositionTarget)compositionTarget;
         }
 
         public static ICompositionSurface CreateCompositionSurfaceForSwapChain(this Compositor compositor, SharpDX.DXGI.SwapChain1 swapChain)
