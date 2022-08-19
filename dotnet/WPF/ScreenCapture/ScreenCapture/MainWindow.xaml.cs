@@ -172,6 +172,7 @@ namespace WPFCaptureSample
             root.Children.InsertAtTop(sample.Visual);
         }
 
+
         private void InitWindowList()
         {
             if (ApiInformation.IsApiContractPresent(typeof(Windows.Foundation.UniversalApiContract).FullName, 8))

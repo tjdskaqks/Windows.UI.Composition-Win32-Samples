@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4DDD37B1-E3E8-46C1-BDE9-3039A93DAF27}</ProjectGuid>
+    <ProjectGuid>{D717E57C-F843-4D09-8DD7-2FDFCAD854AB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>WPFCaptureSample</RootNamespace>
-    <AssemblyName>WPFCaptureSample</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>ScreenCaptureDemo</RootNamespace>
+    <AssemblyName>ScreenCaptureDemo</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -55,7 +56,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MonitorEnumerationHelper.cs" />
     <Compile Include="WindowEnumerationHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -71,6 +71,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonitorEnumerationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -97,19 +98,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CaptureSampleCore\CaptureSampleCore.csproj">
-      <Project>{502b19a1-292a-4e7f-9c19-b16ca42f1f82}</Project>
-      <Name>CaptureSampleCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Composition.WindowsRuntimeHelpers\Composition.WindowsRuntimeHelpers.csproj">
-      <Project>{ec969287-3d35-410a-806c-0baaa7564911}</Project>
-      <Name>Composition.WindowsRuntimeHelpers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.22621.2</Version>
     </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors">
+      <Version>4.5.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CaptureCore\CaptureCore.csproj">
+      <Project>{7110008b-93d2-4fde-8990-abb830ef6b67}</Project>
+      <Name>CaptureCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Composition.WindowsRuntimeHelpers_NETStd\Composition.WindowsRuntimeHelpers_NETStd.csproj">
+      <Project>{fdd1f155-9661-4f59-b419-340fe19cded9}</Project>
+      <Name>Composition.WindowsRuntimeHelpers_NETStd</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

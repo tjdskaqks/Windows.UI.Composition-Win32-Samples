@@ -1,0 +1,23 @@
+﻿<Window x:Class="ScreenCaptureDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreenCaptureDemo"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid x:Name="ControlsGrid" Grid.Row="0">
+            <ComboBox x:Name="cbb_Processes" Margin="10" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="Cbb_Processes_SelectionChanged" DropDownOpened="Cbb_Processes_DropDownOpened">
+
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Rectangle Fill="WhiteSmoke" />
+        </Grid>
+    </Grid>
+</Window>
