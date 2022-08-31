@@ -1,7 +1,9 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.InteropServices;
+﻿using Windows.Win32.Foundation;
+using Windows.Win32.System.WinRT.Graphics.Capture;
 using Windows.Graphics.Capture;
-using System;
+using WinRT.Interop;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Composition.WindowsRuntimeHelpers_NET6
 {
@@ -9,53 +11,53 @@ namespace Composition.WindowsRuntimeHelpers_NET6
     {
         static readonly Guid GraphicsCaptureItemGuid = new Guid("79C3F95B-31F7-4EC2-A464-632EF5D30760");
 
-        [ComImport]
-        [Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [ComVisible(true)]
-        interface IInitializeWithWindow
+        public static void SetWindow(this GraphicsCapturePicker picker, Windows.Win32.Foundation.HWND hwnd)
         {
-            void Initialize( IntPtr hwnd);
+            InitializeWithWindow.Initialize(picker, hwnd);
         }
 
-        [ComImport]
-        [Guid("3628E81B-3CAC-4C60-B7F4-23CE0E0C3356")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [ComVisible(true)]
-        interface IGraphicsCaptureItemInterop
+        public static GraphicsCaptureItem CreateItemForWindow(HWND hwnd)
         {
-            IntPtr CreateForWindow([In] IntPtr window, [In] ref Guid iid);
-
-            IntPtr CreateForMonitor([In] IntPtr monitor, [In] ref Guid iid);
-        }
-
-        public static void SetWindow(this GraphicsCapturePicker picker, IntPtr hwnd)
-        {
-            var interop = (IInitializeWithWindow)(object)picker;
-            interop.Initialize(hwnd);
-        }
-
-        public static GraphicsCaptureItem CreateItemForWindow(IntPtr hwnd)
-        {
-            var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
-            var interop = (IGraphicsCaptureItemInterop)factory;
-            //var temp = typeof(GraphicsCaptureItem);
-            var itemPointer = interop.CreateForWindow(hwnd, GraphicsCaptureItemGuid);
-            var item = Marshal.GetObjectForIUnknown(itemPointer) as GraphicsCaptureItem;
-            Marshal.Release(itemPointer);
-
+            GraphicsCaptureItem item = null;
+            unsafe
+            {
+                item = CreateItemForCallback((Windows.Win32.System.WinRT.Graphics.Capture.IGraphicsCaptureItemInterop interop, Guid* guid) =>
+                {
+                    interop.CreateForWindow(hwnd, guid, out object raw);
+                    return raw;
+                });
+            }
             return item;
         }
 
-        public static GraphicsCaptureItem CreateItemForMonitor(IntPtr hmon)
+        public static GraphicsCaptureItem CreateItemForMonitor(Windows.Win32.Graphics.Gdi.HMONITOR hmon)
         {
-            var factory = WindowsRuntimeMarshal.GetActivationFactory(typeof(GraphicsCaptureItem));
-            var interop = (IGraphicsCaptureItemInterop)factory;
-            //var temp = typeof(GraphicsCaptureItem);
-            var itemPointer = interop.CreateForMonitor(hmon, GraphicsCaptureItemGuid);
-            var item = Marshal.GetObjectForIUnknown(itemPointer) as GraphicsCaptureItem;
-            Marshal.Release(itemPointer);
+            GraphicsCaptureItem item = null;
+            unsafe
+            {
+                item = CreateItemForCallback((Windows.Win32.System.WinRT.Graphics.Capture.IGraphicsCaptureItemInterop interop, Guid* guid) =>
+                {
+                    interop.CreateForMonitor(hmon, guid, out object raw);
+                    return raw;
+                });
+            }
+            return item;
+        }
 
+        private unsafe delegate object InteropCallback(IGraphicsCaptureItemInterop interop, Guid* guid);
+
+        private static GraphicsCaptureItem CreateItemForCallback(InteropCallback callback)
+        {
+            var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
+            GraphicsCaptureItem item = null;
+            unsafe
+            {
+                var guid = GraphicsCaptureItemGuid;
+                var guidPointer = (Guid*)Unsafe.AsPointer(ref guid);
+                var raw = Marshal.GetIUnknownForObject(callback(interop, guidPointer));
+                item = GraphicsCaptureItem.FromAbi(raw);
+                Marshal.Release(raw);
+            }
             return item;
         }
     }

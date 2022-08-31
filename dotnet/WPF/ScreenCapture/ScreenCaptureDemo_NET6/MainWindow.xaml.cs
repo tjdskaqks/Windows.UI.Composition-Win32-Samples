@@ -63,7 +63,7 @@ namespace ScreenCaptureDemo_NET6
             compositor = new Windows.UI.Composition.Compositor();
 
             // Create a target for the window.
-            target = compositor.CreateDesktopWindowTarget(hwnd, true);
+            target = compositor.CreateDesktopWindowTarget((Windows.Win32.Foundation.HWND)hwnd, true);
 
             // Attach the root visual.
             root = compositor.CreateContainerVisual();
@@ -83,7 +83,7 @@ namespace ScreenCaptureDemo_NET6
             compositor = new Compositor();
 
             // Create a target for the window.
-            target = compositor.CreateDesktopWindowTarget(hwnd, true);
+            target = compositor.CreateDesktopWindowTarget((Windows.Win32.Foundation.HWND)hwnd, true);
 
             // Attach the root visual.
             root = compositor.CreateContainerVisual();
@@ -159,11 +159,20 @@ namespace ScreenCaptureDemo_NET6
             {
                 string[] notProcess = new string[] { "계산기", "NVIDIA GeForce Overlay", "Microsoft Text Input Application", "설정" };
 
-                var processesWithWindows = from p in Process.GetProcesses()
-                                           where !string.IsNullOrWhiteSpace(p.MainWindowTitle) && WindowEnumerationHelper.IsWindowValidForCapture(p.MainWindowHandle)
-                                           select p;
+                try
+                {
+                    var processesWithWindows = from p in Process.GetProcesses()
+                                               where !string.IsNullOrWhiteSpace(p.MainWindowTitle) && WindowEnumerationHelper.IsWindowValidForCapture(p.MainWindowHandle)
+                                               select p;
 
-                list.AddRange(processesWithWindows.Where(process => !notProcess.Contains(process.MainWindowTitle)).Select(process => new FindProcess() { ProcessNanme = process.MainWindowTitle, Handle = process.MainWindowHandle, Pid = process.Id, CaptureType = CaptureTypeEnum.Program }));
+                    list.AddRange(processesWithWindows.Where(process => !notProcess.Contains(process.MainWindowTitle)).Select(process => new FindProcess() { ProcessNanme = process.MainWindowTitle, Handle = process.MainWindowHandle, Pid = process.Id, CaptureType = CaptureTypeEnum.Program }));
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                
             }
 
             return list;
@@ -172,7 +181,7 @@ namespace ScreenCaptureDemo_NET6
         private async Task StartPickerCaptureAsync()
         {
             var picker = new GraphicsCapturePicker();
-            picker.SetWindow(hwnd);
+            picker.SetWindow((Windows.Win32.Foundation.HWND)hwnd);
             GraphicsCaptureItem item = await picker.PickSingleItemAsync();
 
             if (item != null)
@@ -183,7 +192,7 @@ namespace ScreenCaptureDemo_NET6
 
         private void StartHwndCapture(IntPtr hwnd)
         {
-            GraphicsCaptureItem item = CaptureHelper.CreateItemForWindow(hwnd);
+            GraphicsCaptureItem item = CaptureHelper.CreateItemForWindow((Windows.Win32.Foundation.HWND)hwnd);
             if (item != null)
             {
                 sample.StartCaptureFromItem(item);
@@ -192,7 +201,7 @@ namespace ScreenCaptureDemo_NET6
 
         private void StartHmonCapture(IntPtr hmon)
         {
-            GraphicsCaptureItem item = CaptureHelper.CreateItemForMonitor(hmon);
+            GraphicsCaptureItem item = CaptureHelper.CreateItemForMonitor((Windows.Win32.Graphics.Gdi.HMONITOR)hmon);
             if (item != null)
             {
                 sample.StartCaptureFromItem(item);
